@@ -6,7 +6,7 @@ import { INode } from './NodeInterface';
 interface Props {
 	data: INode;
 	mouseDown: (row: number, col: number) => void;
-	mouseUp: () => void;
+	mouseUp: (row: number, col: number) => void;
 	mouseEnter: (row: number, col: number) => void;
 }
 
@@ -21,7 +21,7 @@ export const Node: React.FC<Props> = ({
 			style={data.delay ? { animationDelay: data.delay + 'ms' } : {}}
 			className={`node ${data.type}`}
 			onMouseDown={() => mouseDown(data.row, data.col)}
-			onMouseUp={() => mouseUp()}
+			onMouseUp={() => mouseUp(data.row, data.col)}
 			onMouseEnter={() => mouseEnter(data.row, data.col)}
 		></div>
 	);

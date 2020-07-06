@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 import './Grid.css';
 import { Node } from './node/Node';
-import { INode } from './node/NodeInterface';
+import { INode, equalNodes } from './node/NodeInterface';
 import { aStar } from '../Algorithm/A*';
 
 // grid size
@@ -53,33 +53,113 @@ export const Grid = () => {
 			),
 		);
 	};
+	const placeStart = (row: number, col: number) => {
+		start.current = grid[row][col];
+		setGrid(
+			grid.map((gRow) =>
+				gRow.map((gNode) => {
+					if (
+						(gNode.col !== col || gNode.row !== row) &&
+						gNode.type === 'start'
+					) {
+						gNode.type = '';
+						return gNode;
+					}
+					if (gNode.col !== col || gNode.row !== row) return gNode;
 
-	// state
-	const [grid, setGrid] = useState(getInitialGrid());
-	const [start, setStart] = useState(grid[H / 2][1]);
-	const [end, setEnd] = useState(grid[H / 2][W - 2]);
-	const [mouseIsPressed, setMouseIsPressed] = useState(false);
+					gNode.type = 'start';
+					start.current = gNode;
+					return gNode;
+				}),
+			),
+		);
+	};
+	/**
+	 * used to copy data from the result of the algorithm to the grid
+	 */
+	const inPath = (node: INode, path: INode[]) => {
+		for (let i = 0; i < path.length; i++) {
+			const n = path[i];
+			if (n.col === node.col && n.row === node.row)
+				return { previous: n.previous, type: n.type, delay: i * 50 };
+		}
+		return null;
+	};
+	const constructPath = (node: INode) => {
+		let path = [node];
+		let current = path[0];
+		while (current !== start.current) {
+			const parent = current.previous;
+			if (parent === null) {
+				return path;
+			}
+			current = grid[parent.row][parent.col];
+			path = [current, ...path];
+		}
+		return path;
+	};
+
+	const clearGridKeepWalls = () => {
+		const cleanGrid = getInitialGrid();
+		setGrid(
+			grid.map((row, i) =>
+				row.map((node, j) => {
+					if (
+						['wall', 'start', 'end'].indexOf(node.type) === -1 &&
+						['start', 'end'].indexOf(cleanGrid[i][j].type) === -1
+					) {
+						console.log(node.type);
+
+						node = cleanGrid[i][j];
+					}
+					if (equalNodes(node, start.current)) node.type = 'start';
+					if (equalNodes(node, end.current)) node.type = 'end';
+
+					return node;
+				}),
+			),
+		);
+	};
 
 	// events
 	const handleMouseDown = (row: number, col: number) => {
 		setMouseIsPressed(true);
-		toggleWall(row, col);
+
+		if (grid[row][col].type === 'start') {
+			setCursor('start');
+			return;
+		}
+
+		if (cursor === 'wall') {
+			toggleWall(row, col);
+			return;
+		}
 	};
 	const handleMouseUpOrLeave = () => {
 		setMouseIsPressed(false);
 	};
+	const handleMouseUp = (row: number, col: number) => {
+		if (cursor === 'start') {
+			placeStart(row, col);
+			setCursor('wall');
+		}
+		setMouseIsPressed(false);
+	};
+
 	const handleMouseEnter = (row: number, col: number) => {
 		if (!mouseIsPressed) return;
-
-		toggleWall(row, col);
+		if (cursor === 'wall') {
+			toggleWall(row, col);
+		}
+		if (cursor === 'start') placeStart(row, col);
 	};
 	const handleVisualize = () => {
-		const path = aStar([...grid], start, end, setGrid);
+		const cloneGrid = grid.map((row) => row.map((node) => node));
+		const path = aStar(cloneGrid, start.current, end.current);
 
 		if (path === undefined) {
 			return;
 		}
-		const shortestPath = constructPath(path[path.length - 1]);
 
 		let finalDelay = 0;
 		setGrid(
@@ -96,14 +176,21 @@ export const Grid = () => {
 				}),
 			),
 		);
+		if (!equalNodes(path[path.length - 1], end.current)) return;
+		console.log(end.current);
+
+		const shortestPath = constructPath(path[path.length - 2]);
+
 		setTimeout(() => {
 			setGrid(
 				grid.map((gRow) =>
 					gRow.map((gNode) => {
 						const i = shortestPath.indexOf(gNode);
 						if (i > -1) {
-							gNode.type = 'path';
-							gNode.delay = i * 100;
+							if (gNode.type !== 'start' && gNode.type !== 'end') {
+								gNode.type = 'path';
+								gNode.delay = i * 100;
+							}
 						}
 						return gNode;
 					}),
@@ -111,28 +198,13 @@ export const Grid = () => {
 			);
 		}, finalDelay + 500);
 	};
-	const inPath = (node: INode, path: INode[]) => {
-		for (let i = 0; i < path.length; i++) {
-			const n = path[i];
-			if (n.col === node.col && n.row === node.row)
-				return { previous: n.previous, type: n.type, delay: i * 50 };
-		}
-		return null;
-	};
-	const constructPath = (node: INode) => {
-		let path = [node];
-		let current = path[0];
-		while (current != start) {
-			const parent = current.previous;
-			if (parent === null) {
-				return path;
-			}
-			current = grid[parent.row][parent.col];
-			path = [current, ...path];
-			console.log(current.row, current.col);
-		}
-		return path;
-	};
+
+	// state
+	const [grid, setGrid] = useState(getInitialGrid());
+	const start = useRef(grid[H / 2][1]);
+	const end = useRef(grid[H / 2][W - 2]);
+	const [mouseIsPressed, setMouseIsPressed] = useState(false);
+	const [cursor, setCursor] = useState('wall');
 
 	return (
 		<div
@@ -142,8 +214,6 @@ export const Grid = () => {
 		>
 			<div className='btn-row'>
 				<button onClick={handleVisualize}>Visualize</button>
-			</div>
-			<div className='btn-row'>
 				<button
 					onClick={() => {
 						setGrid(getInitialGrid());
@@ -151,6 +221,7 @@ export const Grid = () => {
 				>
 					Clear
 				</button>
+				<button onClick={clearGridKeepWalls}>Reset</button>
 			</div>
 			{grid.map((row, i) => (
 				<div className='row' key={i}>
@@ -159,7 +230,7 @@ export const Grid = () => {
 							<Node
 								data={node}
 								mouseDown={handleMouseDown}
-								mouseUp={handleMouseUpOrLeave}
+								mouseUp={handleMouseUp}
 								mouseEnter={handleMouseEnter}
 								key={i + ',' + j}
 							></Node>

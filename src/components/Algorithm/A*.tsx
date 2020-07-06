@@ -3,16 +3,7 @@ import { INode } from '../grid/node/NodeInterface';
 const COST = 10;
 const DIAG_COST = 14;
 
-const delay = 100;
-export const aStar = (
-	grid: INode[][],
-	start: INode,
-	end: INode,
-	setGrid: {
-		(value: import('react').SetStateAction<INode[][]>): void;
-		(arg0: INode[][]): void;
-	},
-) => {
+export const aStar = (grid: INode[][], start: INode, end: INode) => {
 	const height = grid.length;
 	const width = grid[0].length;
 
@@ -30,18 +21,22 @@ export const aStar = (
 		let lowestFCost = open.pop();
 		if (lowestFCost === undefined) return;
 		current = lowestFCost;
-		current.type = 'closed';
-		grid[current.row][current.col].type = 'closed';
+		if (current.type !== 'start' && current.type !== 'end') {
+			current.type = 'closed';
+			grid[current.row][current.col].type = 'closed';
+		}
 
 		closed = [...closed, current];
 		//track open and close
 		path = [...path, current];
 		if (current.col === end.col && current.row === end.row) {
+			console.log('path found');
+
 			return path;
 		}
 		let neighbors = getNeighbors(current.row, current.col, height, width);
 
-		neighbors.forEach((neighbor, idx) => {
+		neighbors.forEach((neighbor) => {
 			const neighborNode = grid[neighbor.row][neighbor.col];
 			if (neighborNode.type === 'wall' || neighborNode.type === 'closed')
 				return;
@@ -62,6 +57,7 @@ export const aStar = (
 			}
 		});
 	}
+	return path;
 };
 
 const sortByFCost = (open: INode[]) => {
