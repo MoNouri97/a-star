@@ -6,4 +6,5 @@ export interface INode {
 	hCost: number;
 	fCost: number;
 	previous: { row: number; col: number } | null;
+	delay?: number | string;
 }

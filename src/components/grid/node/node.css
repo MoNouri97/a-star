@@ -4,6 +4,7 @@
 	outline: 1px solid #c7c7c7;
 	background: #dddddd;
 	display: inline-block;
+	transition: all 0.2s ease-out;
 }
 .wall {
 	background: #181818;
@@ -12,11 +13,37 @@
 	z-index: 2;
 	animation: yourAnimation 0.2s ease-out 0s 1 normal forwards;
 }
+.start {
+	background: green !important;
+}
+
+.end {
+	background: red !important;
+}
+
+.closed {
+	animation: visitedAnimation 0.5s ease-out;
+	animation-iteration-count: 1;
+	animation-direction: normal;
+	animation-fill-mode: forwards;
+}
+.path {
+	animation: shortestPath 0.2s ease-out;
+	animation-iteration-count: 1;
+	animation-direction: normal;
+	animation-fill-mode: forwards;
+}
+/* .open {
+	animation: openAnim 0.2s ease-out;
+	animation-iteration-count: 1;
+	animation-direction: normal;
+	animation-fill-mode: forwards;
+} */
 
 /* Copy this @keyframes block to your CSS*/
 @keyframes yourAnimation {
 	0.0% {
-		transform: scale(1);
+		transform: scale(1.2);
 	}
 
 	50% {
@@ -26,8 +53,84 @@
 		transform: scale(1);
 	}
 }
+@keyframes closedAnim {
+	0.0% {
+		transform: scale(1);
+		background: #dddddd;
+		border-radius: 100px;
+	}
 
-/* Add the animation: property to whichever element you want to animate */
-#elementToAnimate {
-	animation: yourAnimation 0.5s ease 0s 1 normal forwards;
+	50% {
+		transform: scale(1.35);
+	}
+	100% {
+		transform: scale(1);
+		background: crimson;
+		border-radius: 0px;
+	}
+}
+@keyframes pathAnim {
+	0.0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.35);
+	}
+	100% {
+		transform: scale(1);
+		background: rgb(238, 255, 0);
+	}
+}
+@keyframes openAnim {
+	0.0% {
+		transform: scale(1);
+		background: #dddddd;
+	}
+
+	50% {
+		transform: scale(1.35);
+	}
+	100% {
+		transform: scale(1);
+		background: rgb(0, 162, 255);
+	}
+}
+
+@keyframes visitedAnimation {
+	0% {
+		transform: scale(0.3);
+		background-color: rgba(0, 0, 66, 0.75);
+		border-radius: 100%;
+	}
+
+	50% {
+		background-color: rgba(17, 104, 217, 0.75);
+	}
+
+	75% {
+		transform: scale(1.2);
+		background-color: rgba(0, 217, 159, 0.75);
+	}
+
+	100% {
+		transform: scale(1);
+		background-color: rgba(0, 190, 218, 0.75);
+	}
+}
+@keyframes shortestPath {
+	0% {
+		transform: scale(0.6);
+		background-color: rgb(255, 254, 106);
+	}
+
+	50% {
+		transform: scale(1.2);
+		background-color: rgb(255, 254, 106);
+	}
+
+	100% {
+		transform: scale(1);
+		background-color: rgb(255, 254, 106);
+	}
 }

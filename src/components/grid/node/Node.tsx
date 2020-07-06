@@ -18,6 +18,7 @@ export const Node: React.FC<Props> = ({
 }) => {
 	return (
 		<div
+			style={data.delay ? { animationDelay: data.delay + 'ms' } : {}}
 			className={`node ${data.type}`}
 			onMouseDown={() => mouseDown(data.row, data.col)}
 			onMouseUp={() => mouseUp()}

@@ -9,3 +9,8 @@
 	display: block;
 	margin: -3px;
 }
+
+.btn-row {
+	padding: 10px;
+	margin: 10px;
+}
