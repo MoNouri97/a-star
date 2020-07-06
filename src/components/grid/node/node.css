@@ -1,0 +1,33 @@
+.node {
+	width: 25px;
+	height: 25px;
+	outline: 1px solid #c7c7c7;
+	background: #dddddd;
+	display: inline-block;
+}
+.wall {
+	background: #181818;
+	outline: 1px solid #181818;
+	position: relative;
+	z-index: 2;
+	animation: yourAnimation 0.2s ease-out 0s 1 normal forwards;
+}
+
+/* Copy this @keyframes block to your CSS*/
+@keyframes yourAnimation {
+	0.0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.35);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* Add the animation: property to whichever element you want to animate */
+#elementToAnimate {
+	animation: yourAnimation 0.5s ease 0s 1 normal forwards;
+}

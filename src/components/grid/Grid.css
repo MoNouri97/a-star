@@ -1,0 +1,11 @@
+.grid {
+	border: 2px solid black;
+	padding: 10px;
+	margin: 0 auto;
+	width: auto;
+	color: white;
+}
+.row {
+	display: block;
+	margin: -3px;
+}

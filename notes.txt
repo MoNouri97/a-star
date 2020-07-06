@@ -1,0 +1,29 @@
+------------------------
+Distance from .A
+
+14	10	14
+10	.A	10
+14	10	14 
+
+-------------------------
+G cost = dist from start 
+H cost = dist from end
+F cost = G + H
+
+----------
+G		H |
+	F	  |
+		  |
+----------
+
+---------------------------
+choosing node F , H then random
+----------------------
+open // nodes to be evaluated
+closed // already evaluated
+add start node to open
+
+loop
+	
+
+
