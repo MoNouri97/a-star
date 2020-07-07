@@ -6,8 +6,12 @@ import { INode, equalNodes } from './node/NodeInterface';
 import { aStar } from '../Algorithm/A*';
 
 // grid size
-const W = 30;
+const W = 40;
 const H = 20;
+// cursor and nodes
+const START = 'start';
+const END = 'end';
+const WALL = 'wall';
 
 export const Grid = () => {
 	// Helpers
@@ -18,8 +22,8 @@ export const Grid = () => {
 			for (let col = 0; col < W; col++) {
 				currentRow.push(createNode(row, col));
 				if (defaultPoints) {
-					if (row === H / 2 && col === 1) currentRow[col].type = 'start';
-					if (row === H / 2 && col === W - 2) currentRow[col].type = 'end';
+					if (row === H / 2 && col === 1) currentRow[col].type = START;
+					if (row === H / 2 && col === W - 2) currentRow[col].type = END;
 				}
 			}
 			grid.push(currentRow);
@@ -47,21 +51,17 @@ export const Grid = () => {
 				gRow.map((gNode) => {
 					if (gNode.col !== col || gNode.row !== row) return gNode;
 
-					if (gNode.type === 'wall') gNode.type = ' ';
-					else if (gNode.type === ' ') gNode.type = 'wall';
-
-					console.log(gNode);
+					if (gNode.type === WALL) gNode.type = ' ';
+					else if (gNode.type === ' ') gNode.type = WALL;
 					return gNode;
 				}),
 			),
 		);
 	};
-	const placeSpecialNode = (
-		row: number,
-		col: number,
-		type: string = 'start',
-	) => {
-		start.current = grid[row][col];
+
+	const placeSpecialNode = (row: number, col: number, type: string = START) => {
+		console.log('place', type);
+
 		setGrid(
 			grid.map((gRow) =>
 				gRow.map((gNode) => {
@@ -69,10 +69,12 @@ export const Grid = () => {
 						gNode.type = ' ';
 						return gNode;
 					}
+					if (gNode.type !== ' ') return gNode;
 					if (gNode.col !== col || gNode.row !== row) return gNode;
 
 					gNode.type = type;
-					start.current = gNode;
+					if (type === START) start.current = gNode;
+					if (type === END) end.current = gNode;
 					return gNode;
 				}),
 			),
@@ -111,8 +113,8 @@ export const Grid = () => {
 				row.map((node, j) => {
 					node = cleanGrid[i][j];
 
-					if (equalNodes(node, start.current)) node.type = 'start';
-					if (equalNodes(node, end.current)) node.type = 'end';
+					if (equalNodes(node, start.current)) node.type = START;
+					if (equalNodes(node, end.current)) node.type = END;
 
 					return node;
 				}),
@@ -124,11 +126,11 @@ export const Grid = () => {
 		setGrid(
 			grid.map((row, i) =>
 				row.map((node, j) => {
-					if (node.type !== 'wall') {
+					if (node.type !== WALL) {
 						node = cleanGrid[i][j];
 					}
-					if (equalNodes(node, start.current)) node.type = 'start';
-					if (equalNodes(node, end.current)) node.type = 'end';
+					if (equalNodes(node, start.current)) node.type = START;
+					if (equalNodes(node, end.current)) node.type = END;
 
 					return node;
 				}),
@@ -140,12 +142,16 @@ export const Grid = () => {
 	const handleMouseDown = (row: number, col: number) => {
 		setMouseIsPressed(true);
 
-		if (grid[row][col].type === 'start') {
-			setCursor('start');
+		if (grid[row][col].type === START) {
+			setCursor(START);
+			return;
+		}
+		if (grid[row][col].type === END) {
+			setCursor(END);
 			return;
 		}
 
-		if (cursor === 'wall') {
+		if (cursor === WALL) {
 			toggleWall(row, col);
 			return;
 		}
@@ -154,19 +160,23 @@ export const Grid = () => {
 		setMouseIsPressed(false);
 	};
 	const handleMouseUp = (row: number, col: number) => {
-		if (cursor === 'start') {
-			placeSpecialNode(row, col);
-			setCursor('wall');
+		if (cursor === START) {
+			placeSpecialNode(row, col, START);
+			setCursor(WALL);
+		}
+		if (cursor === END) {
+			placeSpecialNode(row, col, END);
+			setCursor(WALL);
 		}
 		setMouseIsPressed(false);
 	};
 
 	const handleMouseEnter = (row: number, col: number) => {
 		if (!mouseIsPressed) return;
-		if (cursor === 'wall') {
-			toggleWall(row, col);
-		}
-		if (cursor === 'start') placeSpecialNode(row, col);
+
+		if (cursor === WALL) toggleWall(row, col);
+		if (cursor === START) placeSpecialNode(row, col, START);
+		if (cursor === END) placeSpecialNode(row, col, END);
 	};
 	const handleVisualize = () => {
 		const cloneGrid = grid.map((row) => row.map((node) => node));
@@ -189,7 +199,7 @@ export const Grid = () => {
 					}
 					// keep the end node
 					if (equalNodes(gNode, end.current)) {
-						gNode.type = 'end';
+						gNode.type = END;
 					}
 					return gNode;
 				}),
@@ -205,7 +215,7 @@ export const Grid = () => {
 					gRow.map((gNode) => {
 						const i = shortestPath.indexOf(gNode);
 						if (i > -1) {
-							if (gNode.type !== 'start' && gNode.type !== 'end') {
+							if (gNode.type !== START && gNode.type !== END) {
 								gNode.type = 'path';
 								gNode.delay = i * 100;
 							}
@@ -222,38 +232,55 @@ export const Grid = () => {
 	const start = useRef(grid[H / 2][1]);
 	const end = useRef(grid[H / 2][W - 2]);
 	const [mouseIsPressed, setMouseIsPressed] = useState(false);
-	const [cursor, setCursor] = useState('wall');
-
-	useEffect(() => {
-		console.log('changed');
-	}, [grid]);
+	const [cursor, setCursor] = useState(WALL);
 
 	return (
 		<div
-			className='grid'
+			className='layout'
 			onMouseUp={handleMouseUpOrLeave}
 			onMouseLeave={handleMouseUpOrLeave}
 		>
-			<div className='btn-row'>
-				<button onClick={handleVisualize}>Visualize</button>
-				<button onClick={clearGrid}>Clear</button>
-				<button onClick={clearGridKeepWalls}>Reset</button>
-			</div>
-			{grid.map((row, i) => (
-				<div className='row' key={i}>
-					{row.map((node, j) => {
-						return (
-							<Node
-								data={node}
-								mouseDown={handleMouseDown}
-								mouseUp={handleMouseUp}
-								mouseEnter={handleMouseEnter}
-								key={i + ',' + j}
-							></Node>
-						);
-					})}
+			<div className='main'>
+				<div className='right-side'>
+					<div className='hero is-light'>
+						<div className='container'>
+							<div className='hero-body'>
+								<h1 className='title'>A* Pathfinding</h1>
+								<h2 className='subtitle'>Visualizer</h2>
+							</div>
+						</div>
+					</div>
+					<div className='btn-section box'>
+						<div className='btn' onClick={handleVisualize}>
+							Visualize
+						</div>
+						<div className='btn' onClick={clearGrid}>
+							Clear
+						</div>
+						<div className='btn' onClick={clearGridKeepWalls}>
+							Reset
+						</div>
+					</div>
 				</div>
-			))}
+
+				<div className='grid box' style={{ width: W * 26 + 'px' }}>
+					{grid.map((row, i) => (
+						<div className='row' key={i}>
+							{row.map((node, j) => {
+								return (
+									<Node
+										data={node}
+										mouseDown={handleMouseDown}
+										mouseUp={handleMouseUp}
+										mouseEnter={handleMouseEnter}
+										key={i + ',' + j}
+									></Node>
+								);
+							})}
+						</div>
+					))}
+				</div>
+			</div>
 		</div>
 	);
 };
