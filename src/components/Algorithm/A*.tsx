@@ -11,6 +11,7 @@ export const aStar = (grid: INode[][], start: INode, end: INode) => {
 	let closed: INode[] = [];
 	let current: INode;
 	let path: INode[] = [];
+	console.log({ end });
 
 	start.gCost = 0;
 	open.push(start);
@@ -31,6 +32,7 @@ export const aStar = (grid: INode[][], start: INode, end: INode) => {
 		path = [...path, current];
 		if (current.col === end.col && current.row === end.row) {
 			console.log('path found');
+			console.log({ path });
 
 			return path;
 		}
@@ -57,6 +59,9 @@ export const aStar = (grid: INode[][], start: INode, end: INode) => {
 			}
 		});
 	}
+	console.log('path not found');
+	console.log({ path });
+
 	return path;
 };
 
