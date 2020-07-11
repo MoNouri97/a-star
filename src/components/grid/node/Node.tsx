@@ -20,7 +20,10 @@ export const Node: React.FC<Props> = ({
 		<div
 			style={data.delay ? { animationDelay: data.delay + 'ms' } : {}}
 			className={`node ${data.type}`}
-			onMouseDown={() => mouseDown(data.row, data.col)}
+			onMouseDown={(event) => {
+				event.preventDefault();
+				mouseDown(data.row, data.col);
+			}}
 			onMouseUp={() => mouseUp(data.row, data.col)}
 			onMouseEnter={() => mouseEnter(data.row, data.col)}
 		></div>
