@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import './Grid.css';
 import { Node } from './node/Node';
-import { INode, equalNodes } from './node/NodeInterface';
+import { INode, equalNodes, createNode } from './node/NodeInterface';
 import { aStar } from '../Algorithm/A*';
+import { randomWalls } from '../Algorithm/RandomWalls';
 
 // grid size
 const W = 40;
@@ -12,6 +13,9 @@ const H = 20;
 const START = 'start';
 const END = 'end';
 const WALL = 'wall';
+// animation Speed
+let searchSpeed = 20;
+let pathSpeed = 50;
 
 export const Grid = () => {
 	// Helpers
@@ -29,20 +33,6 @@ export const Grid = () => {
 			grid.push(currentRow);
 		}
 		return grid;
-	};
-
-	const createNode = (row: number, col: number) => {
-		const node: INode = {
-			col,
-			row,
-			type: ' ', // [wall,visited (closed), calculated (open) , '' (basic),start,end]
-			gCost: Infinity,
-			hCost: Infinity,
-			fCost: Infinity,
-			previous: null,
-		};
-
-		return node;
 	};
 
 	const toggleWall = (row: number, col: number) => {
@@ -88,7 +78,7 @@ export const Grid = () => {
 		for (let i = 0; i < path.length; i++) {
 			const n = path[i];
 			if (n.col === node.col && n.row === node.row)
-				return { previous: n.previous, type: n.type, delay: i * 50 };
+				return { previous: n.previous, type: n.type, delay: i * searchSpeed };
 		}
 		return null;
 	};
@@ -217,7 +207,7 @@ export const Grid = () => {
 						if (i > -1) {
 							if (gNode.type !== START && gNode.type !== END) {
 								gNode.type = 'path';
-								gNode.delay = i * 100;
+								gNode.delay = i * pathSpeed;
 							}
 						}
 						return gNode;
