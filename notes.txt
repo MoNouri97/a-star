@@ -7,7 +7,7 @@ Distance from .A
 
 -------------------------
 G cost = dist from start 
-H cost = dist from end
+H cost = dist from end (prediction)
 F cost = G + H
 
 ----------
