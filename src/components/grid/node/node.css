@@ -11,17 +11,15 @@
 	width: 25px;
 	height: 25px;
 	outline: 1px solid #ffffff;
-	background: #eaeaea;
+	background: #f0f0f0;
 	display: inline-block;
 	transition: all 0.2s ease-out;
 }
 .wall {
 	/* background: #181818; */
-	background: var(--rich-black);
-	outline: 1px solid var(--rich-black);
 	position: relative;
 	z-index: 2;
-	animation: yourAnimation 0.2s ease-out 0s 1 normal forwards;
+	animation: wallAnimation 0.2s ease-out 0s 1 normal forwards;
 }
 .start {
 	background: var(--green) !important;
@@ -53,6 +51,26 @@
 } */
 
 /* Copy this @keyframes block to your CSS*/
+@keyframes wallAnimation {
+	0.0% {
+		transform: scale(1.5);
+		background: var(--rich-black);
+		outline: 1px solid var(--rich-black);
+	}
+
+	80% {
+		transform: scale(0.9);
+		background: var(--rich-black);
+		outline: 1px solid var(--rich-black);
+	}
+
+	100% {
+		transform: scale(1);
+		background: var(--rich-black);
+		outline: 1px solid var(--rich-black);
+	}
+}
+
 @keyframes yourAnimation {
 	0.0% {
 		transform: scale(1.35);
@@ -100,8 +118,8 @@
 	}
 
 	100% {
-		transform: scale(1);
-		border-radius: 40%;
+		transform: scale(0.8);
+		border-radius: 50%;
 		background-color: var(--rose-madder);
 	}
 }

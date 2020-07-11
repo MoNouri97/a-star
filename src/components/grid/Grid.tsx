@@ -97,11 +97,10 @@ export const Grid = () => {
 	};
 
 	const clearGrid = () => {
-		const cleanGrid = getInitialGrid(false);
 		setGrid(
 			grid.map((row, i) =>
 				row.map((node, j) => {
-					node = cleanGrid[i][j];
+					node = createNode(i, j);
 
 					if (equalNodes(node, start.current)) node.type = START;
 					if (equalNodes(node, end.current)) node.type = END;
@@ -112,12 +111,11 @@ export const Grid = () => {
 		);
 	};
 	const clearGridKeepWalls = () => {
-		const cleanGrid = getInitialGrid(false);
 		setGrid(
 			grid.map((row, i) =>
 				row.map((node, j) => {
 					if (node.type !== WALL) {
-						node = cleanGrid[i][j];
+						node = createNode(i, j);
 					}
 					if (equalNodes(node, start.current)) node.type = START;
 					if (equalNodes(node, end.current)) node.type = END;
@@ -217,6 +215,38 @@ export const Grid = () => {
 		}, finalDelay + 500);
 	};
 
+	const handleRandomMaze = () => {
+		const newGrid = randomWalls(W, H);
+		clearGrid();
+		setTimeout(() => {
+			setGrid(
+				grid.map((gRow, i) =>
+					gRow.map((gNode, j) => {
+						gNode = createNode(i, j);
+
+						if (equalNodes(gNode, start.current)) {
+							gNode.type = START;
+							return gNode;
+						}
+						if (equalNodes(gNode, end.current)) {
+							gNode.type = END;
+							return gNode;
+						}
+
+						const res = newGrid[i][j];
+						if (!res.wall) {
+							return gNode;
+						}
+						gNode.type = WALL;
+						gNode.delay = res.delay;
+
+						return gNode;
+					}),
+				),
+			);
+		}, 50);
+	};
+
 	// state
 	const [grid, setGrid] = useState(getInitialGrid());
 	const start = useRef(grid[H / 2][1]);
@@ -232,23 +262,21 @@ export const Grid = () => {
 		>
 			<div className='main'>
 				<div className='right-side'>
-					<div className='hero is-light'>
-						<div className='container'>
-							<div className='hero-body'>
-								<h1 className='title'>A* Pathfinding</h1>
-								<h2 className='subtitle'>Visualizer</h2>
-							</div>
+					<div className='btn-section'>
+						<div className='subtitle is-6'>Visualize Algorithm</div>
+						<div className='button' onClick={handleVisualize}>
+							A*
 						</div>
-					</div>
-					<div className='btn-section box'>
-						<div className='btn' onClick={handleVisualize}>
-							Visualize
+						<div className='subtitle is-6'>Grid</div>
+						<div className='button' onClick={clearGrid}>
+							Clear Walls
 						</div>
-						<div className='btn' onClick={clearGrid}>
-							Clear
+						<div className='button' onClick={clearGridKeepWalls}>
+							Reset Path
 						</div>
-						<div className='btn' onClick={clearGridKeepWalls}>
-							Reset
+						<div className='subtitle is-6'>Maze Generation</div>
+						<div className='button' onClick={handleRandomMaze}>
+							Random
 						</div>
 					</div>
 				</div>
