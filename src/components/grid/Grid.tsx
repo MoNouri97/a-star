@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, ChangeEvent } from 'react';
 
 import './Grid.css';
 import { Node } from './node/Node';
@@ -14,8 +14,14 @@ const START = 'start';
 const END = 'end';
 const WALL = 'wall';
 // animation Speed
-let searchSpeed = 20;
-let pathSpeed = 50;
+const SLOW_SPEED = {
+	SEARCH: 50,
+	PATH: 100,
+};
+const FAST_SPEED = {
+	SEARCH: 20,
+	PATH: 50,
+};
 
 export const Grid = () => {
 	// Helpers
@@ -78,7 +84,11 @@ export const Grid = () => {
 		for (let i = 0; i < path.length; i++) {
 			const n = path[i];
 			if (n.col === node.col && n.row === node.row)
-				return { previous: n.previous, type: n.type, delay: i * searchSpeed };
+				return {
+					previous: n.previous,
+					type: n.type,
+					delay: i * searchSpeed.current,
+				};
 		}
 		return null;
 	};
@@ -193,7 +203,10 @@ export const Grid = () => {
 				}),
 			),
 		);
-		if (!equalNodes(path[path.length - 1], end.current)) return;
+		if (!equalNodes(path[path.length - 1], end.current)) {
+			alert('no path found');
+			return;
+		}
 
 		const shortestPath = constructPath(path[path.length - 2]);
 		// animate shortest path
@@ -205,7 +218,7 @@ export const Grid = () => {
 						if (i > -1) {
 							if (gNode.type !== START && gNode.type !== END) {
 								gNode.type = 'path';
-								gNode.delay = i * pathSpeed;
+								gNode.delay = i * pathSpeed.current;
 							}
 						}
 						return gNode;
@@ -244,15 +257,28 @@ export const Grid = () => {
 					}),
 				),
 			);
-		}, 50);
+		}, 20);
 	};
+	const handleSpeedChange = (event: ChangeEvent<HTMLSelectElement>) => {
+		console.log(event.target.value);
 
-	// state
+		if (event.target.value === 'fast') {
+			searchSpeed.current = FAST_SPEED.SEARCH;
+			pathSpeed.current = FAST_SPEED.PATH;
+		}
+		if (event.target.value === 'slow') {
+			searchSpeed.current = SLOW_SPEED.SEARCH;
+			pathSpeed.current = SLOW_SPEED.PATH;
+		}
+	};
+	// state & refs
 	const [grid, setGrid] = useState(getInitialGrid());
 	const start = useRef(grid[H / 2][1]);
 	const end = useRef(grid[H / 2][W - 2]);
 	const [mouseIsPressed, setMouseIsPressed] = useState(false);
 	const [cursor, setCursor] = useState(WALL);
+	const searchSpeed = useRef(FAST_SPEED.SEARCH);
+	const pathSpeed = useRef(FAST_SPEED.PATH);
 
 	return (
 		<div
@@ -264,6 +290,17 @@ export const Grid = () => {
 				<div className='right-side'>
 					<div className='btn-section'>
 						<div className='subtitle is-6'>Visualize Algorithm</div>
+						<div className='field mb-3'>
+							<div className='control'>
+								<label htmlFor='select'>Speed : </label>
+								<div className='select is-small'>
+									<select defaultValue='fast' onChange={handleSpeedChange}>
+										<option value='slow'>Slow</option>
+										<option value='fast'>Fast</option>
+									</select>
+								</div>
+							</div>
+						</div>
 						<div className='button' onClick={handleVisualize}>
 							A*
 						</div>

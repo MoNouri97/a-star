@@ -3,11 +3,11 @@
 	color: rgb(19, 19, 19);
 	border-radius: 20px;
 	background: #f0f0f0;
-	/* padding: 5px; */
 }
 .row {
 	display: block;
-	margin: -6px;
+	/* margin: -6px; */
+	height: 25px;
 }
 .header {
 	display: flex;

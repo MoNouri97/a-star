@@ -10,7 +10,7 @@
 .node {
 	width: 25px;
 	height: 25px;
-	outline: 1px solid #ffffff;
+	outline: 1px solid #a7a7a7;
 	background: #f0f0f0;
 	display: inline-block;
 	transition: all 0.2s ease-out;
@@ -53,13 +53,13 @@
 /* Copy this @keyframes block to your CSS*/
 @keyframes wallAnimation {
 	0.0% {
-		transform: scale(1.5);
+		transform: scale(1.35);
 		background: var(--rich-black);
 		outline: 1px solid var(--rich-black);
 	}
 
-	80% {
-		transform: scale(0.9);
+	50% {
+		transform: scale(0.8);
 		background: var(--rich-black);
 		outline: 1px solid var(--rich-black);
 	}
@@ -99,11 +99,13 @@
 	75% {
 		transform: scale(1.2);
 		background-color: rgba(0, 217, 159, 0.75);
+		border-radius: 50%;
 	}
 
 	100% {
 		transform: scale(1);
 		background-color: var(--tiffany-blue);
+		outline: 1px solid white;
 	}
 }
 @keyframes shortestPath {
@@ -121,5 +123,6 @@
 		transform: scale(0.8);
 		border-radius: 50%;
 		background-color: var(--rose-madder);
+		outline: 0px;
 	}
 }
