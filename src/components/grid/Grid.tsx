@@ -286,8 +286,8 @@ export const Grid = () => {
 			onMouseUp={handleMouseUpOrLeave}
 			onMouseLeave={handleMouseUpOrLeave}
 		>
-			<div className='main'>
-				<div className='right-side'>
+			<div className='main columns'>
+				<div className='right-side column'>
 					<div className='btn-section'>
 						<div className='subtitle is-6'>Visualize Algorithm</div>
 						<div className='field mb-3'>
@@ -318,7 +318,10 @@ export const Grid = () => {
 					</div>
 				</div>
 
-				<div className='grid box' style={{ width: W * 26 + 'px' }}>
+				<div
+					className='grid box column is-12 is-9-desktop'
+					// style={{ width: W * 26 + 'px' }}
+				>
 					{grid.map((row, i) => (
 						<div className='row' key={i}>
 							{row.map((node, j) => {

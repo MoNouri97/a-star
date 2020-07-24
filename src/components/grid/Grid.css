@@ -1,13 +1,19 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
 .grid {
-	width: auto;
+	padding: 20px;
+	margin: 10px;
 	color: rgb(19, 19, 19);
 	border-radius: 20px;
 	background: #f0f0f0;
 }
 .row {
-	display: block;
+	display: flex;
 	/* margin: -6px; */
-	height: 25px;
+	/* height: 25px; */
 }
 .header {
 	display: flex;
@@ -21,10 +27,11 @@
 	align-items: center;
 }
 .main {
-	display: flex;
+	/* display: flex; */
 	justify-content: space-evenly;
 	align-items: center;
 	height: 100vh;
+	padding: 10px;
 }
 .main .subtitle {
 	margin-top: 1rem;

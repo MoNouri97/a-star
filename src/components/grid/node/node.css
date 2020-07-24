@@ -8,12 +8,21 @@
 	--green: hsl(81, 82%, 58%);
 }
 .node {
-	width: 25px;
-	height: 25px;
+	/* width: 2.5%;
+	height: 2.5%; */
 	outline: 1px solid #a7a7a7;
 	background: #f0f0f0;
 	display: inline-block;
 	transition: all 0.2s ease-out;
+}
+.node {
+	width: 2.5%;
+}
+
+.node:after {
+	content: '';
+	display: block;
+	padding-bottom: 100%;
 }
 .wall {
 	/* background: #181818; */
