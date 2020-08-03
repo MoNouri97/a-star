@@ -5,6 +5,7 @@ import { Node } from './node/Node';
 import { INode, equalNodes, createNode } from './node/NodeInterface';
 import { aStar } from '../Algorithm/A*';
 import { randomWalls } from '../Algorithm/RandomWalls';
+import { useCheckbox } from '../useCheckbox';
 
 // grid size
 const W = 40;
@@ -43,8 +44,8 @@ export const Grid = () => {
 
 	const toggleWall = (row: number, col: number) => {
 		setGrid(
-			grid.map((gRow) =>
-				gRow.map((gNode) => {
+			grid.map(gRow =>
+				gRow.map(gNode => {
 					if (gNode.col !== col || gNode.row !== row) return gNode;
 
 					if (gNode.type === WALL) gNode.type = ' ';
@@ -59,8 +60,8 @@ export const Grid = () => {
 		console.log('place', type);
 
 		setGrid(
-			grid.map((gRow) =>
-				gRow.map((gNode) => {
+			grid.map(gRow =>
+				gRow.map(gNode => {
 					if ((gNode.col !== col || gNode.row !== row) && gNode.type === type) {
 						gNode.type = ' ';
 						return gNode;
@@ -119,6 +120,7 @@ export const Grid = () => {
 				}),
 			),
 		);
+		setPathFound(false);
 	};
 	const clearGridKeepWalls = () => {
 		setGrid(
@@ -134,6 +136,7 @@ export const Grid = () => {
 				}),
 			),
 		);
+		setPathFound(false);
 	};
 
 	// events
@@ -177,17 +180,24 @@ export const Grid = () => {
 		if (cursor === END) placeSpecialNode(row, col, END);
 	};
 	const handleVisualize = () => {
-		const cloneGrid = grid.map((row) => row.map((node) => node));
+		const cloneGrid = grid.map(row => row.map(node => node));
 		// get the closed path
-		const path = aStar(cloneGrid, start.current, end.current);
+		console.log(allowDiag);
+
+		const path = aStar(
+			cloneGrid,
+			start.current,
+			end.current,
+			allowDiag.checked,
+		);
 		if (path === undefined) {
 			return;
 		}
 
 		let finalDelay = 0;
 		setGrid(
-			grid.map((gRow) =>
-				gRow.map((gNode) => {
+			grid.map(gRow =>
+				gRow.map(gNode => {
 					const res = inPath(gNode, path);
 					if (res !== null) {
 						gNode.type = res.type + '';
@@ -203,6 +213,7 @@ export const Grid = () => {
 				}),
 			),
 		);
+		setPathFound(true);
 		if (!equalNodes(path[path.length - 1], end.current)) {
 			alert('no path found');
 			return;
@@ -212,8 +223,8 @@ export const Grid = () => {
 		// animate shortest path
 		setTimeout(() => {
 			setGrid(
-				grid.map((gRow) =>
-					gRow.map((gNode) => {
+				grid.map(gRow =>
+					gRow.map(gNode => {
 						const i = shortestPath.indexOf(gNode);
 						if (i > -1) {
 							if (gNode.type !== START && gNode.type !== END) {
@@ -279,6 +290,8 @@ export const Grid = () => {
 	const [cursor, setCursor] = useState(WALL);
 	const searchSpeed = useRef(FAST_SPEED.SEARCH);
 	const pathSpeed = useRef(FAST_SPEED.PATH);
+	const allowDiag = useCheckbox(false);
+	const [pathFound, setPathFound] = useState(false);
 
 	return (
 		<div
@@ -300,10 +313,18 @@ export const Grid = () => {
 									</select>
 								</div>
 							</div>
+							<label className='checkbox'>
+								<input type='checkbox' {...allowDiag} />
+								Allow Diagonal
+							</label>
 						</div>
-						<div className='button' onClick={handleVisualize}>
+						<button
+							className='button'
+							onClick={handleVisualize}
+							disabled={pathFound}
+						>
 							A*
-						</div>
+						</button>
 						<div className='subtitle is-6'>Grid</div>
 						<div className='button' onClick={clearGrid}>
 							Clear Walls

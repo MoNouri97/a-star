@@ -13,8 +13,8 @@ export const randomWalls: (
 				wall: false,
 				delay: 0,
 			});
-			if (Math.random() < 0.2) {
-				currentRow[col].delay = col * 100;
+			if (Math.random() < 0.5) {
+				currentRow[col].delay = (col + row) * 50;
 				currentRow[col].wall = true;
 			}
 		}

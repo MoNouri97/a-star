@@ -2,8 +2,15 @@ import { INode } from '../grid/node/NodeInterface';
 
 const COST = 10;
 const DIAG_COST = 14;
+let DIAG = false;
 
-export const aStar = (grid: INode[][], start: INode, end: INode) => {
+export const aStar = (
+	grid: INode[][],
+	start: INode,
+	end: INode,
+	allowDiag = false,
+) => {
+	DIAG = allowDiag;
 	const height = grid.length;
 	const width = grid[0].length;
 
@@ -34,15 +41,19 @@ export const aStar = (grid: INode[][], start: INode, end: INode) => {
 
 			return path;
 		}
-		let neighbors = getNeighbors(current.row, current.col, height, width);
+		let neighbors = getNeighbors(
+			current.row,
+			current.col,
+			height,
+			width,
+			allowDiag,
+		);
 
-		neighbors.forEach((neighbor) => {
+		neighbors.forEach(neighbor => {
 			const neighborNode = grid[neighbor.row][neighbor.col];
 			if (neighborNode.type === 'wall' || neighborNode.type === 'closed')
 				return;
-
 			const newGCost = current.gCost + distanceTo(neighborNode, current);
-
 			if (neighborNode.gCost > newGCost) {
 				neighborNode.gCost = newGCost;
 				neighborNode.hCost = distanceTo(neighborNode, end);
@@ -78,10 +89,14 @@ const getNeighbors = (
 	col: number,
 	height: number,
 	width: number,
+	allowDiag = false,
 ) => {
 	let list: { row: number; col: number }[] = [];
 	for (let i = -1; i < 2; i++) {
 		for (let j = -1; j < 2; j++) {
+			if (!allowDiag && i !== 0 && j !== 0) {
+				continue;
+			}
 			if (i === 0 && j === 0) continue;
 			if (row + i >= height || row + i < 0) continue;
 			if (col + j >= width || col + j < 0) continue;
@@ -95,7 +110,9 @@ const getNeighbors = (
 const distanceTo = (node: INode, end: INode) => {
 	const rowDifference = Math.abs(node.row - end.row);
 	const colDifference = Math.abs(node.col - end.col);
-
+	if (!DIAG) {
+		return COST * (colDifference + rowDifference);
+	}
 	/**
 	 * if x > y : 14y + 10(x - y)
 	 */

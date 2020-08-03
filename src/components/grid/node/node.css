@@ -8,8 +8,8 @@
 	--green: hsl(81, 82%, 58%);
 }
 .node {
-	/* width: 2.5%;
-	height: 2.5%; */
+	/* width: 25px;
+	height: 25px; */
 	outline: 1px solid #a7a7a7;
 	background: #f0f0f0;
 	display: inline-block;
@@ -41,7 +41,7 @@
 }
 
 .closed {
-	animation: visitedAnimation 0.5s ease-out;
+	animation: visitedAnimation 1s ease-out;
 	animation-iteration-count: 1;
 	animation-direction: normal;
 	animation-fill-mode: forwards;
@@ -52,12 +52,6 @@
 	animation-direction: normal;
 	animation-fill-mode: forwards;
 }
-/* .open {
-	animation: openAnim 0.2s ease-out;
-	animation-iteration-count: 1;
-	animation-direction: normal;
-	animation-fill-mode: forwards;
-} */
 
 /* Copy this @keyframes block to your CSS*/
 @keyframes wallAnimation {
@@ -132,6 +126,6 @@
 		transform: scale(0.8);
 		border-radius: 50%;
 		background-color: var(--rose-madder);
-		outline: 0px;
+		outline: 0px white;
 	}
 }
